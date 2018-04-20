@@ -1,7 +1,7 @@
 {
-  "name": "my-project",
+  "name": "taxi-together-client",
   "version": "1.0.0",
-  "description": "A Mpvue project",
+  "description": "一起拼车吧微信小程序",
   "author": "JrainLau <jrainlau@163.com>",
   "private": true,
   "scripts": {
