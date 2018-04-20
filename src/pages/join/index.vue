@@ -72,15 +72,6 @@ export default {
     await wx.startPullDownRefresh()
     await this.getBillInfo()
     await wx.stopPullDownRefresh()
-
-    // 处理过期拼单，在设定出发时间15分钟后提示过期，踢出拼单
-    // const expireHour = Number(this.billInfo.time.split(':')[0])
-    // const expireMin = Number(this.billInfo.time.split(':')[1])
-    // const currentHour = new Date().getHours()
-    // const currentMin = new Date().getMinutes()
-    // if (currentHour > expireHour || (currentHour === expireHour && currentMin - expireMin >= 15)) {
-    //   this.leaveBill()
-    // }
   },
   async onPullDownRefresh () {
     await this.getBillInfo()
@@ -89,6 +80,8 @@ export default {
   methods: {
     async getBillInfo () {
       this.billInfo = await this.$store.dispatch('getBillInfo', this.billId)
+      // 若拼单存在，则表示用户存在于此拼单，能够获取拼单信息
+      // 否则重定向到首页
       if (this.billInfo.billId) {
         this.inThisBill = this.billInfo.members
           .filter(({ userId }) => userId === this.userInfo.userId).length !== 0

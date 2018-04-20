@@ -7,25 +7,11 @@ import { request, getUserInfo, uploadFile } from 'utils/wx'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  state: {
-    userInfo: {},
-    billInfo: {
-      from: 'state-from',
-      to: 'state-to',
-      time: 'state-time: 8:00',
-      billId: 'billId-'
-    }
-  },
-  mutations: {
-    GET_USER_INFO (_state, userInfo) {
-      _state.userInfo = userInfo
-      return userInfo
-    },
-    GET_BILL_INFO (_state, billInfo) {
-      _state.billInfo = billInfo
-    }
-  },
   actions: {
+    /**
+     * @param  {} {commit}
+     * 获取用户公开信息
+     */
     async getUserInfo ({ commit }) {
       const { userInfo } = await getUserInfo({
         withCredenitals: false
@@ -33,9 +19,13 @@ export default new Vuex.Store({
       userInfo.avatar = userInfo.avatarUrl
       userInfo.name = userInfo.nickName
       userInfo.userId = encodeURIComponent(userInfo.nickName + userInfo.city + userInfo.gender + userInfo.country)
-      commit('GET_USER_INFO', userInfo)
       return userInfo
     },
+    /**
+     * @param  {} {commit}
+     * @param  { String } userId 用户ID
+     * 检查用户是否已经存在于某一拼单中
+     */
     async checkInBill ({ commit }, userId) {
       const res = await request({
         method: 'post',
@@ -46,6 +36,17 @@ export default new Vuex.Store({
       })
       return res
     },
+    /**
+     * @param  {} {commit}
+     * @param  { String } userId 用户ID
+     * @param  { String } name   用户昵称
+     * @param  { String } avatar 用户头像
+     * @param  { String } time   出发时间
+     * @param  { String } from   出发地点
+     * @param  { String } to     目的地点
+     * @param  { String } billId 拼单ID
+     * 创建拼单
+     */
     async createBill ({ commit }, { userId, name, avatar, time, from, to, billId }) {
       const res = await request({
         method: 'post',
@@ -60,9 +61,13 @@ export default new Vuex.Store({
           billId
         }
       })
-      commit('GET_BILL_INFO', res)
       return res
     },
+    /**
+     * @param  {} {commit}
+     * @param  { String } billId 拼单ID
+     * 获取拼单信息
+     */
     async getBillInfo ({ commit }, billId) {
       const res = await request({
         method: 'post',
@@ -73,6 +78,14 @@ export default new Vuex.Store({
       })
       return res
     },
+    /**
+     * @param  {} {commit}
+     * @param  { String } userId 用户ID
+     * @param  { String } name   用户昵称
+     * @param  { String } avatar 用户头像
+     * @param  { String } billId 拼单ID
+     * 参加拼单
+     */
     async joinBill ({ commit }, { userId, name, avatar, billId }) {
       const res = await request({
         method: 'post',
@@ -86,6 +99,12 @@ export default new Vuex.Store({
       })
       return res
     },
+    /**
+     * @param  {} {commit}
+     * @param  { String } userId 用户ID
+     * @param  { String } billId 拼单ID
+     * 退出拼单
+     */
     async leaveBill ({ commit }, { userId, billId }) {
       const res = await request({
         method: 'post',
@@ -97,6 +116,12 @@ export default new Vuex.Store({
       })
       return res
     },
+    /**
+     * @param  {} {commit}
+     * @param  { String } filePath 图片路径
+     * @param  { String } billId   拼单ID
+     * 参加拼单
+     */
     async uploadImg ({ commit }, { filePath, billId }) {
       const res = await uploadFile({
         url: `${apiDomain}/uploadImg`,
